@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { ListRestartIcon, UploadCloudIcon } from "lucide-react";
-import { File } from "buffer";
+import React from "react";
+
 import { useGlobalStore } from "@/store/globalStore";
+import { UploadCloudIcon } from "lucide-react";
 function FileUploadComponent() {
   const { changeChatWindow } = useGlobalStore();
-  const [file, setFile] = useState<any>(null);
+
   const uploadPdf = () => {
     // Logic to upload PDF
     const el = document.createElement("input");
@@ -16,7 +16,6 @@ function FileUploadComponent() {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         console.log(file);
-        setFile(file);
         const formData = new FormData();
         formData.append("pdf", file);
         //call the api to send file to the server 
@@ -46,7 +45,7 @@ function FileUploadComponent() {
 
   const checkProcessingStatus = async (fileId: string) => {
     const interval = 2000;
-    let timerFunction: any;
+    let timerFunction: NodeJS.Timeout | null = null; // Declare timerFunction outside the poll function
     const poll = async () => {
       try {
         const res = await fetch(`http://localhost:8000/status/${fileId}`, {

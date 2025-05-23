@@ -30,7 +30,8 @@ function ChatComponent() {
       const data = await res.json();
 
       setMessages(prev => [...prev, { type: 'bot', message: data.message || 'No response received.' }]);
-    } catch (err) {
+    } catch (error) {
+      console.log(error)
       setMessages(prev => [...prev, { type: 'bot', message: 'Error fetching response.' }]);
     } finally {
       setLoading(false);
