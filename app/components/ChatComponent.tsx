@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { RefreshCcwDotIcon, SendIcon } from 'lucide-react'
@@ -17,26 +17,33 @@ function ChatComponent() {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const { isChatwindow } = useGlobalStore();
+  const { isChatwindow, requestedFileId, setClean, isClean } = useGlobalStore();
 
   const handleSend = async () => {
     if (!query.trim()) return;
     setMessages(prev => [...prev, { type: 'user', message: query }]);
     setQuery('');
     setLoading(true);
-    const beforePrompt = 'Read the avilable context and try to reply...'
+    const beforePrompt = ''
     try {
-      const res = await fetch(`http://localhost:8000/chat?message=${encodeURIComponent(beforePrompt+query)}`);
+      const res = await fetch(`http://localhost:8000/chat?message=${encodeURIComponent(beforePrompt + query)}&fileId=${requestedFileId}`);
       const data = await res.json();
 
       setMessages(prev => [...prev, { type: 'bot', message: data.message || 'No response received.' }]);
-    } catch (error) {
-      console.log(error)
+      setClean(false)
+    } catch (err) {
       setMessages(prev => [...prev, { type: 'bot', message: 'Error fetching response.' }]);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isClean) {
+      setMessages([])
+    }
+
+  }, [isClean])
 
   if (isChatwindow === 'loading') return <AnimatedLoader />;
 
@@ -76,9 +83,9 @@ function ChatComponent() {
               </div>
             ))}
             {loading && (
-              
-                <AnimatedLoader />
-          
+
+              <AnimatedLoader />
+
             )}
           </div>
 

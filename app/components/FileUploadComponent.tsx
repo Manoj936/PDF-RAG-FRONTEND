@@ -1,13 +1,14 @@
 "use client";
-import React from "react";
-
+import React, { useState } from "react";
+import { ListRestartIcon, UploadCloudIcon } from "lucide-react";
+import { File } from "buffer";
 import { useGlobalStore } from "@/store/globalStore";
-import { UploadCloudIcon } from "lucide-react";
 function FileUploadComponent() {
-  const { changeChatWindow } = useGlobalStore();
-
+  const { changeChatWindow , changeRequestedFile ,setClean } = useGlobalStore();
+  const [file, setFile] = useState<any>(null);
   const uploadPdf = () => {
     // Logic to upload PDF
+   
     const el = document.createElement("input");
     el.setAttribute("type", "file");
     el.setAttribute("accept", ".pdf");
@@ -16,6 +17,7 @@ function FileUploadComponent() {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         console.log(file);
+        setFile(file);
         const formData = new FormData();
         formData.append("pdf", file);
         //call the api to send file to the server 
@@ -32,7 +34,9 @@ function FileUploadComponent() {
 
           const responseData = await fileuploadRes.json(); // or .text() depending on your server response
           console.log('Response Data:', responseData);
+          changeRequestedFile(responseData.fileId)
           checkProcessingStatus(responseData.fileId)
+          setClean(true);
         } catch (error) {
           console.error('Upload failed:', error);
           changeChatWindow('blocked')
@@ -45,7 +49,7 @@ function FileUploadComponent() {
 
   const checkProcessingStatus = async (fileId: string) => {
     const interval = 2000;
-    let timerFunction: NodeJS.Timeout | null = null; // Declare timerFunction outside the poll function
+    let timerFunction: any;
     const poll = async () => {
       try {
         const res = await fetch(`http://localhost:8000/status/${fileId}`, {
@@ -64,6 +68,7 @@ function FileUploadComponent() {
           console.log("File processing complete:", data);
           // handle completed processing
           changeChatWindow('allowed')
+        
           clearTimeout(timerFunction);
           return;
         }
@@ -71,6 +76,7 @@ function FileUploadComponent() {
         if (data.status === "failed") {
           console.error("Processing failed:", data);
           changeChatWindow('blocked')
+        
           clearTimeout(timerFunction);
           return;
         }
