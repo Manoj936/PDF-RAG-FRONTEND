@@ -32,7 +32,8 @@ function ChatComponent() {
       setMessages(prev => [...prev, { type: 'bot', message: data.message || 'No response received.' }]);
       setClean(false)
     } catch (err) {
-      setMessages(prev => [...prev, { type: 'bot', message: 'Error fetching response.' }]);
+      console.log(err)
+      setMessages(prev => [...prev, { type: 'bot', message: 'Error fetching response. ' }]);
     } finally {
       setLoading(false);
     }
