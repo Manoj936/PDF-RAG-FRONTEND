@@ -35,6 +35,8 @@ export default function Login() {
           <Image
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
             alt="Google"
+            width={20}
+            height={20}
             className="h-5 w-5 mr-3"
           />
           Continue with Google
