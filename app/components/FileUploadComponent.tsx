@@ -1,14 +1,15 @@
 "use client";
-import React  from "react";
-import {  UploadCloudIcon } from "lucide-react";
+import React, { useState } from "react";
+import { UploadCloudIcon } from "lucide-react";
 import { useGlobalStore } from "@/store/globalStore";
 import useAuthStore from "@/store/useAuthStore";
 function FileUploadComponent() {
-  const { changeChatWindow , changeRequestedFile ,setClean } = useGlobalStore();
+  const { changeChatWindow, changeRequestedFile, setClean } = useGlobalStore();
   const user = useAuthStore((s) => s.user);
+  const [fileName, setFileName] = useState<string | null>(null);
   const uploadPdf = () => {
     // Logic to upload PDF
-    console.log(user.email)
+    console.log(user.email);
     const el = document.createElement("input");
     el.setAttribute("type", "file");
     el.setAttribute("accept", ".pdf");
@@ -16,33 +17,35 @@ function FileUploadComponent() {
     el.addEventListener("change", async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        console.log(file);
-       
+        // Check if the file is a PDF
+        setFileName(file.name);
         const formData = new FormData();
         formData.append("pdf", file);
         formData.append("email", user.email); // Assuming you want to send the user's email with the file
-        //call the api to send file to the server 
+        //call the api to send file to the server
         try {
-          changeChatWindow('loading')
-          const fileuploadRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}upload/pdf`, {
-            method: 'POST',
-            body: formData,
-          });
+          changeChatWindow("loading");
+          const fileuploadRes = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}upload/pdf`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
 
           if (!fileuploadRes.ok) {
             throw new Error(`HTTP error! status: ${fileuploadRes.status}`);
           }
 
           const responseData = await fileuploadRes.json(); // or .text() depending on your server response
-          console.log('Response Data:', responseData);
-          changeRequestedFile(responseData.fileId)
-          checkProcessingStatus(responseData.fileId)
+          console.log("Response Data:", responseData);
+          changeRequestedFile(responseData.fileId);
+          checkProcessingStatus(responseData.fileId);
           setClean(true);
         } catch (error) {
-          console.error('Upload failed:', error);
-          changeChatWindow('blocked')
+          console.error("Upload failed:", error);
+          changeChatWindow("blocked");
         }
-
       }
     });
     el.click();
@@ -53,9 +56,12 @@ function FileUploadComponent() {
     let timerFunction: ReturnType<typeof setTimeout> | null = null;
     const poll = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}status/${fileId}`, {
-          method: 'GET',
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}status/${fileId}`,
+          {
+            method: "GET",
+          }
+        );
 
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -68,16 +74,16 @@ function FileUploadComponent() {
         if (data.status === "processed") {
           console.log("File processing complete:", data);
           // handle completed processing
-          changeChatWindow('allowed')
-        
+          changeChatWindow("allowed");
+
           clearTimeout(timerFunction);
           return;
         }
 
         if (data.status === "failed") {
           console.error("Processing failed:", data);
-          changeChatWindow('blocked')
-        
+          changeChatWindow("blocked");
+
           clearTimeout(timerFunction);
           return;
         }
@@ -86,24 +92,21 @@ function FileUploadComponent() {
         timerFunction = setTimeout(poll, interval);
       } catch (err) {
         console.error("Polling error:", err);
-        changeChatWindow('blocked')
+        changeChatWindow("blocked");
       }
     };
-    poll()
-  }
+    poll();
+  };
 
   return (
     <>
-
       <div
         onClick={uploadPdf}
-        className="w-60 font-mono bg-blue-600 text-white rounded-xl  items-center justify-center  flex p-5 text-2xl cursor-pointer"
+        className="w-fit max-w-md font-mono bg-blue-600 text-white rounded-xl flex items-center justify-between px-5 py-4 text-sm sm:text-base cursor-pointer gap-3 shadow-md hover:bg-blue-700 transition"
       >
-        Upload PDF &nbsp; <UploadCloudIcon />
+        <UploadCloudIcon className="w-5 h-5" />
+        <span className="truncate">{fileName ? fileName : "Upload PDF"}</span>
       </div>
-
-
-
     </>
   );
 }
