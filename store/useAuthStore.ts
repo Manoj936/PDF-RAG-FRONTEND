@@ -1,29 +1,28 @@
-// store/useAuthStore.js
+// store/useAuthStore.ts
 import { create } from "zustand";
+import { User, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import {
-  onAuthStateChanged,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
 
-const useAuthStore = create((set) => ({
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  initAuth: () => void;
+  googleLogin: () => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: true,
-
   initAuth: () => {
     onAuthStateChanged(auth, (user) => {
       set({ user, loading: false });
     });
   },
-
   googleLogin: async () => {
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    set({ user: result.user });
+    await signInWithPopup(auth, provider);
   },
-
   logout: async () => {
     await signOut(auth);
     set({ user: null });

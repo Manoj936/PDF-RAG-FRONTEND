@@ -7,6 +7,7 @@ import { RefreshCcwDotIcon, SendIcon } from 'lucide-react'
 import { useGlobalStore } from '@/store/globalStore'
 import AnimatedLoader from './helperComponents/AnimatedLoader'
 import classNames from 'classnames'
+import useAuthStore from '@/store/useAuthStore'
 
 interface ChatMessage {
   type: 'user' | 'bot';
@@ -18,7 +19,7 @@ function ChatComponent() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const { isChatwindow, requestedFileId, setClean, isClean } = useGlobalStore();
-
+  const {user} = useAuthStore()
   const handleSend = async () => {
     if (!query.trim()) return;
     setMessages(prev => [...prev, { type: 'user', message: query }]);
@@ -26,7 +27,7 @@ function ChatComponent() {
     setLoading(true);
     const beforePrompt = ''
     try {
-      const res = await fetch(`http://localhost:8000/chat?message=${encodeURIComponent(beforePrompt + query)}&fileId=${requestedFileId}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}chat?message=${encodeURIComponent(beforePrompt + query)}&fileId=${requestedFileId}&email=${user.email}`);
       const data = await res.json();
 
       setMessages(prev => [...prev, { type: 'bot', message: data.message || 'No response received.' }]);

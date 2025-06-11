@@ -5,7 +5,7 @@ import { useGlobalStore } from "@/store/globalStore";
 import useAuthStore from "@/store/useAuthStore";
 function FileUploadComponent() {
   const { changeChatWindow , changeRequestedFile ,setClean } = useGlobalStore();
-  const user = useAuthStore((s:any) => s.user);
+  const user = useAuthStore((s) => s.user);
   const uploadPdf = () => {
     // Logic to upload PDF
     console.log(user.email)
@@ -24,7 +24,7 @@ function FileUploadComponent() {
         //call the api to send file to the server 
         try {
           changeChatWindow('loading')
-          const fileuploadRes = await fetch('http://localhost:8000/upload/pdf', {
+          const fileuploadRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}upload/pdf`, {
             method: 'POST',
             body: formData,
           });
@@ -53,7 +53,7 @@ function FileUploadComponent() {
     let timerFunction: ReturnType<typeof setTimeout> | null = null;
     const poll = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/status/${fileId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}status/${fileId}`, {
           method: 'GET',
         });
 

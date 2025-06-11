@@ -2,13 +2,14 @@
 import { useEffect } from "react";
 import useAuthStore from "../../store/useAuthStore";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 
 export default function Login() {
-  const googleLogin = useAuthStore((s:any) => s.googleLogin);
-  const user = useAuthStore((s:any) => s.user);
-  const loading = useAuthStore((s:any) => s.loading);
-  const initAuth = useAuthStore((s:any) => s.initAuth);
+  const googleLogin = useAuthStore((s) => s.googleLogin);
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const initAuth = useAuthStore((s) => s.initAuth);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function Login() {
           onClick={googleLogin}
           className="w-full bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg flex items-center justify-center hover:bg-gray-50 transition"
         >
-          <img
+          <Image
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
             alt="Google"
             className="h-5 w-5 mr-3"

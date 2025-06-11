@@ -5,18 +5,25 @@ import { useRouter } from "next/navigation";
 import useAuthStore from "../store/useAuthStore";
 
 import ChatComponent from "./components/ChatComponent";
+
+import { useGlobalStore } from "@/store/globalStore";
 import FileUploadComponent from "./components/FileUploadComponent";
 
 export default function Home() {
   const router = useRouter();
-  const user = useAuthStore((s: any) => s.user);
-  const loading = useAuthStore((s: any) => s.loading);
-  const initAuth = useAuthStore((s: any) => s.initAuth);
-  const logout = useAuthStore((s: any) => s.logout);
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const initAuth = useAuthStore((s) => s.initAuth);
+  const logout = useAuthStore((s) => s.logout);
+  const { setClean } = useGlobalStore();
   useEffect(() => {
     initAuth();
   }, [initAuth]);
 
+  const signOut = () => {
+    logout();
+    setClean(true);
+  };
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -40,7 +47,7 @@ export default function Home() {
             {user.displayName}
           </p>
           <button
-            onClick={logout}
+            onClick={signOut}
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
             Logout
