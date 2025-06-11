@@ -1,19 +1,62 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useAuthStore from "../store/useAuthStore";
 
 import ChatComponent from "./components/ChatComponent";
 import FileUploadComponent from "./components/FileUploadComponent";
 
 export default function Home() {
-  return (
-    <>
+  const router = useRouter();
+  const user = useAuthStore((s: any) => s.user);
+  const loading = useAuthStore((s: any) => s.loading);
+  const initAuth = useAuthStore((s: any) => s.initAuth);
+  const logout = useAuthStore((s: any) => s.logout);
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
 
-      <div className="min-h-screen min-w-screen flex overflow-hidden">
-        <div className="w-[40vw] min-h-screen p-4 flex justify-center items-center">
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user)
+    return <p className="p-4">Checking authentication...</p>;
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <div className="w-full bg-white shadow-md px-6 py-3 flex justify-between items-center">
+        <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight flex items-center gap-2">
+          <span className="text-indigo-600">MindFile</span>
+          <span className="text-xl">🧠</span>
+        </h1>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-gray-700">
+            Hi
+            {user.displayName}
+          </p>
+          <button
+            onClick={logout}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-[40vw] p-4 flex justify-center items-center">
           <FileUploadComponent />
         </div>
-        <div className="w-[60vw] min-h-screen border-l-3 border">
+        <div className="w-[60vw] border-l-4 border-gray-200">
           <ChatComponent />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -2,12 +2,13 @@
 import React  from "react";
 import {  UploadCloudIcon } from "lucide-react";
 import { useGlobalStore } from "@/store/globalStore";
+import useAuthStore from "@/store/useAuthStore";
 function FileUploadComponent() {
   const { changeChatWindow , changeRequestedFile ,setClean } = useGlobalStore();
-
+  const user = useAuthStore((s:any) => s.user);
   const uploadPdf = () => {
     // Logic to upload PDF
-   
+    console.log(user.email)
     const el = document.createElement("input");
     el.setAttribute("type", "file");
     el.setAttribute("accept", ".pdf");
@@ -19,6 +20,7 @@ function FileUploadComponent() {
        
         const formData = new FormData();
         formData.append("pdf", file);
+        formData.append("email", user.email); // Assuming you want to send the user's email with the file
         //call the api to send file to the server 
         try {
           changeChatWindow('loading')
