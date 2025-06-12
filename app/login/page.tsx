@@ -13,6 +13,7 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
+    
     initAuth();
   }, []);
 
