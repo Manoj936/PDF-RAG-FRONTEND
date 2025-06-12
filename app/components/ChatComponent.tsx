@@ -1,5 +1,6 @@
-'use client'
-
+"use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import React, { useEffect, useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,7 +9,7 @@ import { useGlobalStore } from '@/store/globalStore'
 import AnimatedLoader from './helperComponents/AnimatedLoader'
 import classNames from 'classnames'
 import useAuthStore from '@/store/useAuthStore'
-export const dynamic = "force-dynamic";
+
 interface ChatMessage {
   type: 'user' | 'bot';
   message: string;

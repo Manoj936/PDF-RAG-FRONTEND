@@ -1,5 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import React, { useState } from "react";
 import { UploadCloudIcon } from "lucide-react";
 import { useGlobalStore } from "@/store/globalStore";
