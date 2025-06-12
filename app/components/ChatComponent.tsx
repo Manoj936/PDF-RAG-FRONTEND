@@ -8,7 +8,7 @@ import { useGlobalStore } from '@/store/globalStore'
 import AnimatedLoader from './helperComponents/AnimatedLoader'
 import classNames from 'classnames'
 import useAuthStore from '@/store/useAuthStore'
-
+export const dynamic = "force-dynamic";
 interface ChatMessage {
   type: 'user' | 'bot';
   message: string;
