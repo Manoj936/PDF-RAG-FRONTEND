@@ -44,7 +44,7 @@ export default function Home() {
         </h1>
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-700">
-            Hi
+            Hi &nbsp;
             {user.displayName}
           </p>
           <button

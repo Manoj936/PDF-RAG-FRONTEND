@@ -27,25 +27,25 @@ function FileUploadComponent() {
         //call the api to send file to the server
         try {
           changeChatWindow("loading");
-          const fileuploadRes = await fetch(
+          const fileuploadRes :any = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}upload/pdf`,
             {
               method: "POST",
               body: formData,
             }
           );
-
-          if (!fileuploadRes.ok) {
-            throw new Error(`HTTP error! status: ${fileuploadRes.status}`);
-          }
-
           const responseData = await fileuploadRes.json(); // or .text() depending on your server response
-          console.log("Response Data:", responseData);
+          if (!fileuploadRes.ok) {
+            changeChatWindow("blocked");
+            throw new Error(`${responseData.message ? responseData.message : 'Unexpected error occured'}`);
+            
+          }
           changeRequestedFile(responseData.fileId);
           checkProcessingStatus(responseData.fileId);
           setClean(true);
         } catch (error) {
           console.error("Upload failed:", error);
+          alert(error)
           changeChatWindow("blocked");
         }
       }

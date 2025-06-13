@@ -1,41 +1,53 @@
 "use client";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-import React, { useEffect, useState } from 'react'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { RefreshCcwDotIcon, SendIcon } from 'lucide-react'
-import { useGlobalStore } from '@/store/globalStore'
-import AnimatedLoader from './helperComponents/AnimatedLoader'
-import classNames from 'classnames'
-import useAuthStore from '@/store/useAuthStore'
+import React, { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { RefreshCcwDotIcon, SendIcon } from "lucide-react";
+import { useGlobalStore } from "@/store/globalStore";
+import AnimatedLoader from "./helperComponents/AnimatedLoader";
+import classNames from "classnames";
+import useAuthStore from "@/store/useAuthStore";
 
 interface ChatMessage {
-  type: 'user' | 'bot';
+  type: "user" | "bot";
   message: string;
 }
 
 function ChatComponent() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const { isChatwindow, requestedFileId, setClean, isClean } = useGlobalStore();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
   const handleSend = async () => {
     if (!query.trim()) return;
-    setMessages(prev => [...prev, { type: 'user', message: query }]);
-    setQuery('');
+    setMessages((prev) => [...prev, { type: "user", message: query }]);
+    setQuery("");
     setLoading(true);
-    const beforePrompt = ''
+    const beforePrompt = "";
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}chat?message=${encodeURIComponent(beforePrompt + query)}&fileId=${requestedFileId}&email=${user.email}`);
+      const res = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_BACKEND_URL
+        }chat?message=${encodeURIComponent(
+          beforePrompt + query
+        )}&fileId=${requestedFileId}&email=${user.email}`
+      );
       const data = await res.json();
 
-      setMessages(prev => [...prev, { type: 'bot', message: data.message || 'No response received.' }]);
-      setClean(false)
+      setMessages((prev) => [
+        ...prev,
+        { type: "bot", message: data.message || "No response received." },
+      ]);
+      setClean(false);
     } catch (err) {
-      console.log(err)
-      setMessages(prev => [...prev, { type: 'bot', message: 'Error fetching response. ' }]);
+      console.log(err);
+      setMessages((prev) => [
+        ...prev,
+        { type: "bot", message: "Error fetching response. " },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -43,14 +55,13 @@ function ChatComponent() {
 
   useEffect(() => {
     if (isClean) {
-      setMessages([])
+      setMessages([]);
     }
+  }, [isClean]);
 
-  }, [isClean])
+  if (isChatwindow === "loading") return <AnimatedLoader />;
 
-  if (isChatwindow === 'loading') return <AnimatedLoader />;
-
-  if (isChatwindow === 'idle') {
+  if (isChatwindow === "idle") {
     return (
       <div className="min-h-screen flex justify-center items-center font-bold font-mono text-blue-600">
         Please upload a PDF file to add context.
@@ -58,7 +69,7 @@ function ChatComponent() {
     );
   }
 
-  if (isChatwindow === 'blocked') {
+  if (isChatwindow === "blocked") {
     return (
       <div className="min-h-screen flex justify-center items-center font-bold font-mono text-blue-600">
         Unable to process your request at the time. Please try later 😔
@@ -68,7 +79,7 @@ function ChatComponent() {
 
   return (
     <>
-      {isChatwindow === 'allowed' && (
+      {isChatwindow === "allowed" && (
         <div className="flex flex-col justify-between min-h-screen p-4">
           {/* Chat Messages */}
           <div className="flex flex-col gap-2 mb-20 overflow-auto max-h-[80vh]">
@@ -76,20 +87,16 @@ function ChatComponent() {
               <div
                 key={idx}
                 className={classNames(
-                  'max-w-[75%] px-4 py-2 rounded-xl shadow',
-                  msg.type === 'user'
-                    ? 'bg-blue-500 text-white self-end rounded-br-none'
-                    : 'bg-gray-200 text-black self-start rounded-bl-none'
+                  "max-w-[75%] px-4 py-2 rounded-xl shadow",
+                  msg.type === "user"
+                    ? "bg-blue-500 text-white self-end rounded-br-none"
+                    : "bg-gray-200 text-black self-start rounded-bl-none"
                 )}
               >
                 {msg.message}
               </div>
             ))}
-            {loading && (
-
-              <AnimatedLoader />
-
-            )}
+            {loading && <AnimatedLoader />}
           </div>
 
           {/* Input Section */}
@@ -99,7 +106,7 @@ function ChatComponent() {
               className="border-blue-500 border-2"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
             />
             <Button
               variant="outline"
@@ -109,7 +116,7 @@ function ChatComponent() {
             >
               <SendIcon />
             </Button>
-            <div className="p-1 cursor-pointer" onClick={() => setQuery('')}>
+            <div className="p-1 cursor-pointer" onClick={() => setQuery("")}>
               <RefreshCcwDotIcon className="text-blue-700" />
             </div>
           </div>
