@@ -27,7 +27,7 @@ function FileUploadComponent() {
         //call the api to send file to the server
         try {
           changeChatWindow("loading");
-          const fileuploadRes :any = await fetch(
+          const fileuploadRes  = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}upload/pdf`,
             {
               method: "POST",
