@@ -19,7 +19,13 @@ function ChatComponent() {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const { isChatwindow, requestedFileId, setClean, isClean } = useGlobalStore();
+  const {
+    isChatwindow,
+    requestedFileId,
+    setClean,
+    isClean,
+    requestedFileName,
+  } = useGlobalStore();
   const { user } = useAuthStore();
   const handleSend = async () => {
     if (!query.trim()) return;
@@ -33,7 +39,9 @@ function ChatComponent() {
           process.env.NEXT_PUBLIC_BACKEND_URL
         }chat?message=${encodeURIComponent(
           beforePrompt + query
-        )}&fileId=${requestedFileId}&email=${user.email}`
+        )}&fileId=${requestedFileId}&email=${user.email}&filename=${
+          requestedFileName || ""
+        }`
       );
       const data = await res.json();
 
