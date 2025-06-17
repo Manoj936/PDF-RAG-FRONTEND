@@ -61,10 +61,22 @@ function FileUploadComponent() {
               }`
             );
           }
-          changeRequestedFile(responseData.fileId);
-          changeRequestedFileName(file.name);
-          checkProcessingStatus(responseData.fileId);
-          setClean(true);
+          console.log(responseData, "🗃️🗃️🗃️🗃️");
+          if (responseData.status) {
+            changeChatWindow("allowed");
+            changeRequestedFile(responseData.fileId);
+            changeRequestedFileName(responseData.filename);
+            setClean(true);
+          } else {
+            changeChatWindow("blocked");
+            throw new Error(
+              `${
+                responseData.message
+                  ? responseData.message
+                  : "Unexpected error occured"
+              }`
+            );
+          }
         } catch (error) {
           console.error("Upload failed:", error);
           alert(error);
@@ -73,53 +85,6 @@ function FileUploadComponent() {
       }
     });
     el.click();
-  };
-
-  const checkProcessingStatus = async (fileId: string) => {
-    const interval = 2000;
-    let timerFunction: ReturnType<typeof setTimeout> | null = null;
-    const poll = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}status/${fileId}`,
-          {
-            method: "GET",
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-
-        const data = await res.json();
-        console.log("Polling response:", data);
-
-        // Assuming the backend sends something like: { status: "processing" | "done" | "error" }
-        if (data.status === "processed") {
-          console.log("File processing complete:", data);
-          // handle completed processing
-          changeChatWindow("allowed");
-
-          clearTimeout(timerFunction);
-          return;
-        }
-
-        if (data.status === "failed") {
-          console.error("Processing failed:", data);
-          changeChatWindow("blocked");
-
-          clearTimeout(timerFunction);
-          return;
-        }
-
-        // If still processing, schedule the next poll
-        timerFunction = setTimeout(poll, interval);
-      } catch (err) {
-        console.error("Polling error:", err);
-        changeChatWindow("blocked");
-      }
-    };
-    poll();
   };
 
   return (
