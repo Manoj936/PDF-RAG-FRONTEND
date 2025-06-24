@@ -25,6 +25,8 @@ function ChatComponent() {
     setClean,
     isClean,
     requestedFileName,
+    requestType,
+    url
   } = useGlobalStore();
   const { user } = useAuthStore();
   const handleSend = async () => {
@@ -39,7 +41,7 @@ function ChatComponent() {
           process.env.NEXT_PUBLIC_BACKEND_URL
         }chat?message=${encodeURIComponent(
           beforePrompt + query
-        )}&fileId=${requestedFileId}&email=${user.email}&filename=${
+        )}&fileId=${requestedFileId}&email=${user.email}&url=${url}&requestType=${requestType}&filename=${
           requestedFileName || ""
         }`
       );

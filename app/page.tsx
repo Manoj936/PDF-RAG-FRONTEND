@@ -58,10 +58,10 @@ export default function Home() {
 
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-[40vw] p-4 flex justify-center items-center">
+        <div className="w-[45vw] p-4 flex justify-center items-center">
           <FileUploadComponent />
         </div>
-        <div className="w-[60vw] border-l-4 border-gray-200">
+        <div className="w-[55vw] border-l-4 border-blue-700">
           <ChatComponent />
         </div>
       </div>
