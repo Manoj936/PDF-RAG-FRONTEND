@@ -16,6 +16,7 @@ function FileUploadComponent() {
   } = useGlobalStore();
   const user = useAuthStore((s) => s.user);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [urlName , setUrlName] = useState<string | null>(null);
   const processWebsiteUrl = async () => {
     let url = prompt("Please enter the website URL or paste it here:");
     const clipboard = navigator.clipboard;
@@ -38,8 +39,11 @@ function FileUploadComponent() {
 
       if (url && url.trim() !== "") {
         console.log("Final URL:", url);
+        setUrlName(url)
+        setFileName('');
         await processUrl(url); // Awaiting this now
       } else {
+        setUrlName('')
         alert("URL cannot be empty.");
       }
     } catch (err) {
@@ -58,7 +62,7 @@ function FileUploadComponent() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ url }),
+          body: JSON.stringify({ url , email: user.email }),
         }
       );
       const responseData = await UrlRes.json();
@@ -88,6 +92,7 @@ function FileUploadComponent() {
         changeUrl(responseData.url);
         changeRequestedFileName("")
         changeRequestType(responseData.requestType);
+        setClean(true);
       }
     } catch (error) {
       changeChatWindow("blocked");
@@ -117,6 +122,7 @@ function FileUploadComponent() {
         }
         // Check if the file is a PDF
         setFileName(file.name);
+        setUrlName('')
         const formData = new FormData();
         formData.append("pdf", file);
         formData.append("email", user.email); // Assuming you want to send the user's email with the file
@@ -187,7 +193,7 @@ function FileUploadComponent() {
           className="w-fit max-w-md font-mono bg-blue-600 text-white rounded-xl flex items-center justify-between px-5 py-4 text-sm sm:text-base cursor-pointer gap-3 shadow-md hover:bg-blue-700 transition"
         >
           <RssIcon className="w-5 h-5" />
-          <span className="truncate">Provide a Website URL to chat</span>
+          <span className="truncate"> {urlName ? urlName : "Provide a Website URL to chat"} </span>
         </div>
       </div>
     </>
